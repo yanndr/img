@@ -36,7 +36,7 @@ func main() {
 		wg.Add(1)
 		go func(f string) {
 			defer wg.Done()
-			err := imgresize.ResizeImg(f, *sizePtr)
+			err := imgresize.Resize(f, *sizePtr)
 			if err != nil {
 				fmt.Println("Error with ", f, ": ", err)
 				return
@@ -53,8 +53,8 @@ func main() {
 	fmt.Println(`
 	 _[_]_  
           (")  
-       --( : )--'
+      '--( : )--'
         (  :  )
-      "" -...-'""`)
+      ""'-...-'""`)
 
 }
