@@ -15,7 +15,7 @@ import (
 	"strings"
 	"sync"
 
-	nresize "github.com/nfnt/resize"
+	"github.com/nfnt/resize"
 )
 
 const signature = `
@@ -56,12 +56,19 @@ func main() {
 		go func(f string) {
 			defer wg.Done()
 			var err error
-			var img image.Image
+			var outputImg image.Image
+
+			inputImg, _, err := openImage(f)
+			if err != nil {
+				fmt.Println("Error with ", f, ": ", err)
+				return
+			}
 
 			if *heightPtr == 0 && *widthPtr == 0 {
-				img, err = resizeInPercent(f, *sizePtr)
+				width := uint(inputImg.Bounds().Size().X * *sizePtr / 100)
+				outputImg = resize.Resize(width, 0, inputImg, resize.Lanczos3)
 			} else {
-				img, err = resize(f, *widthPtr, *heightPtr)
+				outputImg = resize.Resize(*widthPtr, *heightPtr, inputImg, resize.Lanczos3)
 			}
 
 			if err != nil {
@@ -69,7 +76,7 @@ func main() {
 				return
 			}
 
-			err = save(*outputPtr, f, img)
+			err = save(*outputPtr, f, outputImg)
 			if err != nil {
 				fmt.Println("Error with ", f, ": ", err)
 				return
@@ -77,7 +84,6 @@ func main() {
 
 			fmt.Println(f, "-> Processed.")
 		}(f)
-
 	}
 
 	wg.Wait()
@@ -100,43 +106,20 @@ func encode(extenstion string, w io.Writer, m image.Image) error {
 	return errors.New("unknown format")
 }
 
-func resizeInPercent(f string, size int) (image.Image, error) {
-
-	file, err := os.Open(f)
+func openImage(file string) (image.Image, string, error) {
+	f, err := os.Open(file)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	defer file.Close()
-	img, st, err := image.Decode(file)
+	defer f.Close()
+	img, ext, err := image.Decode(f)
 	if err != nil {
-		return nil, err
-	}
-	fmt.Println(st)
-
-	s := uint(img.Bounds().Size().X * size / 100)
-	result := nresize.Resize(s, 0, img, nresize.Lanczos3)
-
-	return result, nil
-}
-
-func resize(f string, width, height uint) (image.Image, error) {
-
-	file, err := os.Open(f)
-	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	defer file.Close()
-	img, st, err := image.Decode(file)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(st)
+	return img, ext, nil
 
-	result := nresize.Resize(width, height, img, nresize.Lanczos3)
-
-	return result, nil
 }
 
 func save(dir, filename string, img image.Image) error {
