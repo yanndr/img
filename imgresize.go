@@ -26,14 +26,23 @@ const signature = `
       ""'-...-'""
 `
 
+var version, buid string
+
 func main() {
 	sizePtr := flag.Int("s", 50, "Size in % of the original image.")
 	outputPtr := flag.String("o", "out", "Output directory for the images defautl: out.")
 	widthPtr := flag.Uint("w", 0, "Width in px of the original image.")
 	heightPtr := flag.Uint("h", 0, "Height in px of the original image.")
 	formatPtr := flag.String("f", "", "Force the format of the output: png or jpg. if empty it will keep the input image format.")
+	versionPtr := flag.Bool("version", false, "Display the version")
 
 	flag.Parse()
+
+	if *versionPtr {
+		fmt.Println("imgresize version: ", version)
+		fmt.Println(signature)
+		return
+	}
 
 	format := strings.ToLower(*formatPtr)
 
