@@ -31,6 +31,7 @@ func main() {
 	outputPtr := flag.String("o", "out", "Output directory for the images defautl: out.")
 	widthPtr := flag.Uint("w", 0, "Width in px of the original image.")
 	heightPtr := flag.Uint("h", 0, "Height in px of the original image.")
+	formatPtr := flag.String("f", "", "Force the format of the output: png or jpg. if empty it will keep the input image format.")
 
 	flag.Parse()
 
@@ -58,7 +59,7 @@ func main() {
 			var err error
 			var outputImg image.Image
 
-			inputImg, _, err := openImage(f)
+			inputImg, ext, err := openImage(f)
 			if err != nil {
 				fmt.Println("Error with ", f, ": ", err)
 				return
@@ -71,14 +72,22 @@ func main() {
 				outputImg = resize.Resize(*widthPtr, *heightPtr, inputImg, resize.Lanczos3)
 			}
 
+			var outpufilename string
+			if *formatPtr != "" {
+				outpufilename = strings.Replace(f, ext, *formatPtr, 1)
+			} else {
+
+				outpufilename = f
+			}
+
 			if err != nil {
 				fmt.Println("Error with ", f, ": ", err)
 				return
 			}
 
-			err = save(*outputPtr, f, outputImg)
+			err = save(*outputPtr, outpufilename, outputImg)
 			if err != nil {
-				fmt.Println("Error with ", f, ": ", err)
+				fmt.Println("Error with ", outpufilename, ": ", err)
 				return
 			}
 
@@ -93,8 +102,8 @@ func main() {
 
 }
 
-func encode(extenstion string, w io.Writer, m image.Image) error {
-	ext := strings.ToLower(extenstion)
+func encode(extension string, w io.Writer, m image.Image) error {
+	ext := strings.ToLower(extension)
 
 	if ext == ".jpg" || ext == ".jpeg" {
 		return jpeg.Encode(w, m, nil)
@@ -135,13 +144,14 @@ func save(dir, filename string, img image.Image) error {
 	}
 
 	ext := path.Ext(filename)
-	out, err := os.Create(fmt.Sprintf("%v/%v", dir, filename))
+
+	outputFile, err := os.Create(fmt.Sprintf("%v/%v", dir, filename))
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer outputFile.Close()
 
-	return encode(ext, out, img)
+	return encode(ext, outputFile, img)
 }
 
 func exist(path string) (bool, error) {
