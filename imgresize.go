@@ -59,7 +59,7 @@ func main() {
 			var err error
 			var outputImg image.Image
 
-			inputImg, ext, err := openImage(f)
+			inputImg, _, err := openImage(f)
 			if err != nil {
 				fmt.Println("Error with ", f, ": ", err)
 				return
@@ -74,7 +74,9 @@ func main() {
 
 			var outpufilename string
 			if *formatPtr != "" {
-				outpufilename = strings.Replace(f, ext, *formatPtr, 1)
+				ext := path.Ext(f)
+				outpufilename = strings.Replace(f, ext, fmt.Sprintf(".%v", *formatPtr), -1)
+				fmt.Println(outpufilename)
 			} else {
 
 				outpufilename = f
@@ -91,7 +93,7 @@ func main() {
 				return
 			}
 
-			fmt.Println(f, "-> Processed.")
+			fmt.Println(outpufilename, "-> Processed.")
 		}(f)
 	}
 
