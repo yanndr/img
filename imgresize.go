@@ -35,6 +35,12 @@ func main() {
 
 	flag.Parse()
 
+	format := strings.ToLower(*formatPtr)
+
+	if format != "" && (format != "png" && format != "jpg" && format != "jpeg") {
+		log.Fatal("error, unknow output format ", format)
+	}
+
 	var files []string
 	if len(flag.Args()) < 1 {
 		input := "./*.*"
@@ -56,44 +62,7 @@ func main() {
 		wg.Add(1)
 		go func(f string) {
 			defer wg.Done()
-			var err error
-			var outputImg image.Image
-
-			inputImg, _, err := openImage(f)
-			if err != nil {
-				fmt.Println("Error with ", f, ": ", err)
-				return
-			}
-
-			if *heightPtr == 0 && *widthPtr == 0 {
-				width := uint(inputImg.Bounds().Size().X * *sizePtr / 100)
-				outputImg = resize.Resize(width, 0, inputImg, resize.Lanczos3)
-			} else {
-				outputImg = resize.Resize(*widthPtr, *heightPtr, inputImg, resize.Lanczos3)
-			}
-
-			var outpufilename string
-			if *formatPtr != "" {
-				ext := path.Ext(f)
-				outpufilename = strings.Replace(f, ext, fmt.Sprintf(".%v", *formatPtr), -1)
-				fmt.Println(outpufilename)
-			} else {
-
-				outpufilename = f
-			}
-
-			if err != nil {
-				fmt.Println("Error with ", f, ": ", err)
-				return
-			}
-
-			err = save(*outputPtr, outpufilename, outputImg)
-			if err != nil {
-				fmt.Println("Error with ", outpufilename, ": ", err)
-				return
-			}
-
-			fmt.Println(outpufilename, "-> Processed.")
+			processFile(f, format, *outputPtr, *sizePtr, *widthPtr, *heightPtr)
 		}(f)
 	}
 
@@ -102,6 +71,47 @@ func main() {
 
 	fmt.Println(signature)
 
+}
+
+func processFile(file, format, outputDir string, size int, width, height uint) {
+	var err error
+	var outputImg image.Image
+
+	inputImg, _, err := openImage(file)
+	if err != nil {
+		fmt.Println("Error with ", file, ": ", err)
+		return
+	}
+
+	if height == 0 && width == 0 {
+		width := uint(inputImg.Bounds().Size().X * size / 100)
+		outputImg = resize.Resize(width, 0, inputImg, resize.Lanczos3)
+	} else {
+		outputImg = resize.Resize(width, height, inputImg, resize.Lanczos3)
+	}
+
+	var outpufilename string
+	if format != "" {
+		ext := path.Ext(file)
+		outpufilename = strings.Replace(file, ext, fmt.Sprintf(".%v", format), -1)
+		fmt.Println(outpufilename)
+	} else {
+
+		outpufilename = file
+	}
+
+	if err != nil {
+		fmt.Println("Error with ", file, ": ", err)
+		return
+	}
+
+	err = save(outputDir, outpufilename, outputImg)
+	if err != nil {
+		fmt.Println("Error with ", outpufilename, ": ", err)
+		return
+	}
+
+	fmt.Println(outpufilename, "-> Processed.")
 }
 
 func encode(extension string, w io.Writer, m image.Image) error {
