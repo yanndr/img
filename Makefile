@@ -1,7 +1,8 @@
 VERSION=`cat version`
 BUILD=`git rev-parse HEAD`
+DATE=`date +%FT%T%z`
 
-LDFLAGS=-ldflags "-X main.version=${VERSION} -X main.build=${BUILD}"
+LDFLAGS=-ldflags "-X github.com/yanndr/imgresize/cmd.Version=${VERSION} -X github.com/yanndr/imgresize/cmd.CommitHash=${BUILD} -X github.com/yanndr/imgresize/cmd.BuildDate=${DATE}"
 
 build:
 	go build ${LDFLAGS} 
