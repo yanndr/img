@@ -18,7 +18,9 @@ Usage:
 
 Available Commands:
   help        Help about any command
+  
   resize      Resize the images to a percentage or a value.
+  
   version     Print the version number of img
 
 Flags:
@@ -31,6 +33,9 @@ img resize [files ...] [flags]
 
 Flags:
   -f, --format string   Force the format of the output: png or jpg. if empty it will keep the input image format.
+  
   -h, --help            help for resize
+  
   -o, --out string      Output directory for the images defautl: out. (default "out")
+  
   -s, --size int        Size in % of the original image. (default 50)
