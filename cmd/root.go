@@ -8,8 +8,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "imgresize",
-	Short: "Imgresize is a bulk image resizer written in go.",
+	Use:   "img",
+	Short: "Img is an image CLI written in go.",
 	Run: func(cmd *cobra.Command, args []string) {
 
 	},

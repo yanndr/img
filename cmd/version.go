@@ -9,8 +9,8 @@ import (
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the version number of imgresize",
-	Long:  `All software has versions. This is imgresize's`,
+	Short: "Print the version number of img",
+	Long:  `All software has versions. This is img's`,
 	Run: func(cmd *cobra.Command, args []string) {
 		printVersion()
 	},

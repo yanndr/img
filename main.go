@@ -3,7 +3,7 @@ package main
 import (
 	"runtime"
 
-	"github.com/yanndr/imgresize/cmd"
+	"github.com/yanndr/img/cmd"
 )
 
 func main() {
