@@ -1,10 +1,10 @@
 # img
 
 ## About
-This is a Image CLI written in GO. 
-My wife needed a simple tool to resize images quickly, so I decided to write it myself :). This is a learning excercise; the goal is to learn how to build a CLI. So far the client only has one command: Resize. I may add more features later.
+This is a Image CLI written in Go. 
+My wife needed a simple tool to resize images quickly, so I decided to write it myself :). This is a learning excercise; the goal is to learn how to build a CLI. So far, the client only has one command: Resize. I may add more features later.
 
-I used [Cobra](https://github.com/spf13/cobra) for the CLI and [resize lib](https://github.com/nfnt/resize)
+I used [Cobra](https://github.com/spf13/cobra) for the CLI and [resize lib](https://github.com/nfnt/resize) for the image resize functiom.
 
 ## Instalation
 ```
